@@ -1,0 +1,141 @@
+// ----------------------------------------------------------
+// Assignment 3 (Question 2/2) 
+// Written by: Esmé Bellefeuille (40280961)
+// For COMP 248 Section-W – Winter 2025
+// ----------------------------------------------------------
+// Receives input for an entertainment company's daily 
+// revenue data per theatre. Stores data in arrays, and 
+// prints list of input theatre names, average total revenue, 
+// and relative classification of the day's average revenue
+// note: i call rooms/auditoriums "theatres" throughout the 
+// program. sorry for any confusion this may cause. 
+// ----------------------------------------------------------
+import java.util.Scanner; // import scanner 
+
+public class A3_Q2 {
+
+	public static void main(String[] args) {
+	
+		// PART 1: variable declarations and initialisations 
+		Scanner Input=new Scanner(System.in);
+		int i=0;
+		int j=0;
+		String Theatre="";
+		int theatrelength=0;
+		int m=0; 
+		String Revenue="";
+		double Total=0.00;
+
+		// PART 2: displays welcome banner, prompts for and validates data input
+		String Title="""
+				\\---------------------------------------------------------\\
+				/              Montreal CineFun Bookkeeping Program       /
+				\\---------------------------------------------------------\\
+				""";
+		System.out.print(Title); // prints banner   
+	
+		// prompts for data input and determines how to continue program 
+			System.out.println("Please enter the theater rooms you are using today (room|revenue and separated by a semicolon): ");
+			String Concat=Input.nextLine(); // store input data as a single string to break down in the next part 
+			if (Concat.indexOf(";")<1) { // if ";" isn't found in the input data, we can't work with it. there are two possible cases, which follow: 
+				if (Integer.parseInt(Concat)==0) // inputting "0" is the only valid way to terminate the program early 
+					System.out.println("\nYou are not using any theater room today!"); // displays message indicating early program termination   
+				else {
+					System.exit(0);	// any other non-valid way to attempt early program abortion will directly terminate the program (since no guidelines were given for other non-valid input) 
+				}
+			}	
+		
+			// PART 3: once input data is confirmed to be valid, find the real values for some variables which are the basis of later loops and arrays 
+			else  {
+				String Break=Concat; 
+				
+				// PART 3.1: counts number of semicolons ("count") to determine number of columns in the arrays later on 
+				String SubString=Concat; 
+				int A=1;
+				int count=0;
+				while(A>0) { // count number of semicolons to determine number of rows 
+					A=SubString.indexOf(";"); // index of first ;
+					SubString=SubString.substring(A+1); // restart substring
+					count++; 
+					} 
+				count-=1; 
+				
+				// declaring my arrays which are all based on "count" which is why they're listed after the other declarations
+				String[]StrThtre=new String [count]; // string array being used as a vessel for the values of theatre names before being added into the char array 
+				char [][]ChThtre=new char [count][];
+				int []IntRev=new int [count];
+					
+				//  PART 3.2: finds longest cinema name to use as row length for the string and character arrays, and to make them square boards instead of ragged arrays 
+				while (Break.indexOf(";")>0) { // continue iterations until all theatre names have been extracted
+					Theatre=Break.substring(0,Break.indexOf("|")); // each iteration, the now-earliest value of Theatre goes until "|" 
+					if (Theatre.length()>theatrelength) // compare length of Theatre to the longest length of Theatre throughout the iterations completed so far  
+						theatrelength=Theatre.length(); // if it is longer, its length becomes "theatrelength," the longest cinema name of the input data 
+					Break=Break.substring(Break.indexOf(";")+1); // "delete" each iteration's Theatre value after comparing it 
+				} 
+				
+				// PART 4: move values into arrays now that we have defined guidelines (variables) 
+				System.out.println("\nHere is the list of theater rooms you are using today:"); // prints message
+				
+				// PART 4.1: Theatre->string array and Revenue->integer array 
+				// extract theatre names and revenue values again but now put them into the string array and integer array, respectively 
+				Break=Concat; //reset value of break to its initial value--the entire initial input string
+				// in the loop, "break" holds the value of the input string minus an increasing number of theatre name and revenue values, until break holds no substantial value 
+				for (i=0;i<count;i++) {
+					Theatre=Break.substring(0,Break.indexOf("|")); // every iteration, theatre is before "|" 
+					Revenue=Break.substring(Break.indexOf("|")+1,Break.indexOf(";")); // every iteration, revenue is after "|"
+					Break=Break.substring(Break.indexOf(";")+1); // reset value of break to exclude the value of Theatre and Revenue as they are "extracted" from the overall string 
+					StrThtre[i]=Theatre; // put this iteration's value of Theatre into the corresponding column of the string array im using as a vessel 
+					IntRev[i]=Integer.parseInt(Revenue); // parse this iteration's value of Revenue and put it into the corresponding column in the int array 
+					System.out.print("\nNo." + (i+1) + " ");
+					
+					// PART 4.2: string array->character array 
+					for (j=0;j<theatrelength;j++) {  
+						ChThtre[i]=new char[theatrelength]; // reiterating that all "columns" i have row length j 
+						
+						// make up difference between theatre name length and the longest theatre name by adding spaces
+						// basically forcing this array to be a square board 
+						while (StrThtre[i].length()<theatrelength) { 
+							int extra=theatrelength-(StrThtre[i].length()); 
+							for (m=0;m<extra+1;m++) {
+								StrThtre[i]=StrThtre[i]+" "; // add enough characters worth of "" to make up for difference in length
+							}
+						}
+						
+						// PART 4.3: store values in char array and immediately print into the list of cinemas input  
+						ChThtre[i][j]=StrThtre[i].toCharArray()[j]; // as the inner "for" loop (j) and outer "for" loop (i) increment j and i
+					System.out.print(ChThtre[i][j]); // store the corresponding values into the character array and print
+					}
+					
+					Total+=(double)(Integer.parseInt(Revenue)); // parse Revenue and cumulatively adds to value of Total	
+				}
+				
+				// PART 5: calculations for average 
+			
+				double Average=Total/count; // calculate average revenue from input data
+				// classifies the amount, and assigns it a corresponding label
+				char Label='_'; 
+				if(Average >= 1000)
+					Label='V'; // "very high" 
+				if (800 <= Average && Average < 1000)
+					Label='H'; // "high" 
+				if(500 <= Average && Average < 800)
+					Label='R'; // "regular" 
+				if (300 <= Average && Average <500)
+					Label='M'; // "middle" 
+				if(Average < 300)
+					Label='L'; // "low" 
+				
+				// PART 6: final messages 
+				// prints message communicating the information calculated above 
+				System.out.print("\nThe average of the theater rooms revenue is $");
+				System.out.printf("%.2f",Average); // prints the value of average to two decimal points 
+				System.out.print(" and today's average revenue is labeled as: " + Label + "\n");
+			} // closes "else" for the case of initial non-zero input  
+		
+		System.out.print("\nThank you for using Montreal CineFun Bookkeeping Program!"); // displays closing message 
+		
+		Input.close(); // closes keyboard
+		
+	} 
+
+} 
