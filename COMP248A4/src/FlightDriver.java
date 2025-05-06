@@ -6,7 +6,7 @@
 // Demo class for Flight.java; defines the codes 101-110 
 // for the user 
 // ----------------------------------------------------------
-import java.util.Arrays;
+import java.util.Arrays; // test comment
 import java.util.Scanner; // import scanner 
 
 public class FlightDriver {
